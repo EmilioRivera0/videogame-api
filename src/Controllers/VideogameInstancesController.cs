@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.DTO;
 using videogame_api.src.Models;
@@ -29,6 +30,16 @@ namespace videogame_api.src.Controllers
             return ToPublishableDTO(videogameInstance);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> PostVideogameInstance(VideogamePostPutDTO videogameDTO)
+        {
+            var videogameInstance = ToVideogameInstance(0, videogameDTO);
+            _context.VideogamesSet.Add(videogameInstance);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetVideogameInstance), new { id = videogameInstance.Id }, videogameInstance);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideogameInstance(int id, VideogamePostPutDTO videogameDTO)
         {
@@ -55,14 +66,25 @@ namespace videogame_api.src.Controllers
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<VideogamePublishableDTO>> PostVideogameInstance(VideogamePostPutDTO videogameDTO)
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> PatchVideogameInstance(int id, JsonPatchDocument<VideogameInstance> patchDocument)
         {
-            var videogameInstance = ToVideogameInstance(0, videogameDTO);
-            _context.VideogamesSet.Add(videogameInstance);
+            var videogameInstance = await _context.VideogamesSet.FindAsync(id);
+
+            if (videogameInstance == null)
+                return NotFound();
+
+            if (patchDocument == null)
+                return BadRequest();
+
+            patchDocument.ApplyTo(videogameInstance, ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetVideogameInstance), new { id = videogameInstance.Id }, videogameInstance);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
