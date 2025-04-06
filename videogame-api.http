@@ -2,7 +2,7 @@
 ###
 
 GET {{videogame_api_HostAddress}}/api/videogames/
-Accept: application/xml
+Accept: application/json
 
 ###
 

@@ -12,7 +12,7 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
 
-builder.Services.AddControllers(options => options.InputFormatters.Insert(0, JPIF.GetJsonPatchInputFormatter()));
+//builder.Services.AddControllers(options => options.InputFormatters.Insert(0, JPIF.GetJsonPatchInputFormatter()));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
