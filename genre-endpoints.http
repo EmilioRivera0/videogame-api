@@ -1,0 +1,39 @@
+@videogame_api_HostAddress = http://localhost:5030/api/genres/
+###
+
+GET {{videogame_api_HostAddress}}
+Accept: application/json
+
+###
+
+POST {{videogame_api_HostAddress}}
+Content-Type: application/json
+
+{
+  "name": "Puzzles",
+}
+
+###
+
+@id=3
+PUT {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+{
+  "name": "Testing",
+}
+
+###
+
+PATCH {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+[
+    {
+    "op": "add",
+    "path": "/name",
+    "value": "Testing 2"
+  }
+]
+
+###

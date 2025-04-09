@@ -9,5 +9,6 @@ namespace videogame_api.src.Models
         }
         // Database tables/sets
         public DbSet<VideogameInstance> VideogamesSet { get; set; }
+        public DbSet<Genre> GenresSet { get; set; }
     }
 }

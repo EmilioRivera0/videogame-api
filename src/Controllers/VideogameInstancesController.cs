@@ -16,16 +16,16 @@ namespace videogame_api.src.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<VideogamePublishableDTO>>> GetVideogameInstances()
         {
-            return await _context.VideogamesSet.Select(it => ToPublishableDTO(it)).ToListAsync();
+            return await _context.VideogamesSet.Include(it => it.Genres).Select(it => ToPublishableDTO(it)).ToListAsync();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<VideogamePublishableDTO>> GetVideogameInstance(int id)
         {
-            var videogameInstance = await _context.VideogamesSet.FindAsync(id);
+            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
 
             if (videogameInstance == null)
                 return NotFound();
@@ -38,28 +38,38 @@ namespace videogame_api.src.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> PostVideogameInstance(VideogamePostPutDTO videogameDTO)
         {
-            var videogameInstance = ToVideogameInstance(0, videogameDTO);
+            var videogameInstance = await ToVideogameInstance(videogameDTO);
             _context.VideogamesSet.Add(videogameInstance);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetVideogameInstance), new { id = videogameInstance.Id }, videogameInstance);
+            return CreatedAtAction(nameof(GetVideogameInstance), new { id = videogameInstance.Id }, ToPublishableDTO(videogameInstance));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> PutVideogameInstance(int id, VideogamePostPutDTO videogameDTO)
         {
-            var videogameInstance = await _context.VideogamesSet.FindAsync(id);
+            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
             
             if (videogameInstance == null)
-                return BadRequest();
+                return NotFound();
             
             videogameInstance.Name = videogameDTO.Name;
             videogameInstance.Description = videogameDTO.Description;
             videogameInstance.Platform = videogameDTO.Platform;
+            videogameInstance.Genres.Clear();
+            videogameInstance.Genres = videogameDTO.Genres.Select(obj =>
+            {
+                var genre = _context.GenresSet.FirstOrDefault(it => it.Name == obj);
+                if (genre == null)
+                    genre = new Genre { Name = obj };
+                return genre;
+            }).ToList();
+
+            videogameInstance.Version = DateTime.Now;
 
             try
             {
@@ -80,9 +90,9 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PatchVideogameInstance(int id, JsonPatchDocument<VideogameInstance> patchDocument)
+        public async Task<IActionResult> PatchVideogameInstance([FromRoute] int id, JsonPatchDocument<VideogameInstance> patchDocument)
         {
-            var videogameInstance = await _context.VideogamesSet.FindAsync(id);
+            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
 
             if (videogameInstance == null)
                 return NotFound();
@@ -95,12 +105,14 @@ namespace videogame_api.src.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            videogameInstance.Version = DateTime.Now;
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -118,24 +130,38 @@ namespace videogame_api.src.Controllers
 
         // member methods
         private bool VideogameInstanceExists(int id) => _context.VideogamesSet.Any(e => e.Id == id);
-        private VideogamePublishableDTO ToPublishableDTO(VideogameInstance videogameInstance)
+        private static VideogamePublishableDTO ToPublishableDTO(VideogameInstance videogameInstance)
         {
             return new VideogamePublishableDTO
             {
                 Id = videogameInstance.Id,
                 Name = videogameInstance.Name,
                 Description = videogameInstance.Description,
-                Platform = videogameInstance.Platform
+                Platform = videogameInstance.Platform,
+                Genres = [.. videogameInstance.Genres.Select(it => it.Name)]
             };
         }
-        private VideogameInstance ToVideogameInstance(int id, VideogamePostPutDTO videogamePostPutDTO)
+        private async Task<VideogameInstance> ToVideogameInstance(VideogamePostPutDTO videogamePostPutDTO)
         {
+            Genre temp;
+            List<Genre> genres = [];
+
+            foreach (string genre in videogamePostPutDTO.Genres)
+            {
+                temp = await _context.GenresSet.FirstOrDefaultAsync(it => it.Name == genre);
+
+                if (temp == null)
+                    temp = new Genre{Name = genre};
+
+                genres.Add(temp);
+            }
+
             return new VideogameInstance
             {
-                Id = id,
                 Name = videogamePostPutDTO.Name,
                 Description = videogamePostPutDTO.Description,
-                Platform = videogamePostPutDTO.Platform
+                Platform = videogamePostPutDTO.Platform,
+                Genres = genres
             };
         }
     }

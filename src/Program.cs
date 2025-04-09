@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using videogame_api.src.Formatters;
 
 [assembly: ApiController]
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,8 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
-
-//builder.Services.AddControllers(options => options.InputFormatters.Insert(0, JPIF.GetJsonPatchInputFormatter()));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

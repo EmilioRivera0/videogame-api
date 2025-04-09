@@ -1,17 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace videogame_api.src.Models
 {
-    public class VideogameInstance
+    public class Genre
     {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; } = null!;
-        [Required]
-        public string Description { get; set; } = null!;
-        [Required]
-        public string Platform { get; set; } = null!;
-        public List<Genre> Genres { get; set; } = [];
+        [JsonIgnore]
+        public List<VideogameInstance> VideogameInstances { get; set; } = [];
         [ConcurrencyCheck]
         public DateTime Version { get; set; } = DateTime.Now;
     }

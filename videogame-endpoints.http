@@ -1,0 +1,52 @@
+@videogame_api_HostAddress = http://localhost:5030/api/videogames/
+###
+
+GET {{videogame_api_HostAddress}}
+Accept: application/json
+
+###
+
+POST {{videogame_api_HostAddress}}
+Content-Type: application/json
+
+{
+  "name": "Super Mario Bros",
+  "description": "A classic platformer game",
+  "platform": "NES",
+  "genres": [
+    "Kids",
+    "Arcade"
+  ]
+}
+
+###
+
+@id=2
+PUT {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+{
+  "name": "Resident Evil 8",
+  "description": "A modern survival horror classic",
+  "platform": "Multiple",
+  "genres": [
+    "Terror"
+  ]
+}
+
+###
+
+PATCH {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+[
+    {
+    "op": "add",
+    "path": "/genres/-",
+    "value": {
+      "Name": "Action"
+    }
+  }
+]
+
+###
