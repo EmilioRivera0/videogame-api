@@ -1,0 +1,39 @@
+@videogame_api_HostAddress = http://localhost:5030/api/platforms/
+###
+
+GET {{videogame_api_HostAddress}}
+Accept: application/json
+
+###
+
+POST {{videogame_api_HostAddress}}
+Content-Type: application/json
+
+{
+  "name": "Wii",
+}
+
+###
+
+@id=2
+PUT {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+{
+  "name": "Xbox",
+}
+
+###
+
+PATCH {{videogame_api_HostAddress}}{{id}}
+Content-Type: application/json
+
+[
+    {
+    "op": "add",
+    "path": "/name",
+    "value": "Xbox 360"
+  }
+]
+
+###
