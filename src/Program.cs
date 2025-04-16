@@ -13,17 +13,23 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Enable Swagger
+builder.Services.AddSwaggerGen();
 
+// Register in memory DB
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("videogame-api"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure SwaggerUI endpoint at app's root
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "videogame-api");
+        options.RoutePrefix = string.Empty;
+    });
 }
 
 app.UseAuthorization();
