@@ -9,8 +9,7 @@ namespace videogame_api.src.Models
         public string Name { get; set; } = null!;
         [Required]
         public string Description { get; set; } = null!;
-        [Required]
-        public string Platform { get; set; } = null!;
+        public List<Platform> Platforms { get; set; } = null!;
         public List<Genre> Genres { get; set; } = [];
         [ConcurrencyCheck]
         public DateTime Version { get; set; } = DateTime.Now;

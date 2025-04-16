@@ -13,10 +13,17 @@ namespace videogame_api.src.Controllers
 
         // action methods
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VideogamePublishableDTO>>> QueryVideogames([FromQuery] string genre = null!, [FromQuery] string name = null!)
+        public async Task<ActionResult<IEnumerable<VideogamePublishableDTO>>> QueryVideogames(
+            [FromQuery] string genre = null!,
+            [FromQuery] string name = null!,
+            [FromQuery] string platform = null!)
         {
-            IQueryable<VideogameInstance> query = _context.VideogamesSet.Include(it => it.Genres);
+            IQueryable<VideogameInstance> query = _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres);
 
+            if (platform != null)
+                query = query.Where(it => it.Platforms.Any(obj => obj.Name.Contains(platform, StringComparison.CurrentCultureIgnoreCase)));
             if (genre != null)
                 query = query.Where(it => it.Genres.Any(obj => obj.Name.Contains(genre, StringComparison.CurrentCultureIgnoreCase)));
             if (name != null)
@@ -26,7 +33,7 @@ namespace videogame_api.src.Controllers
             {
                 Name = it.Name,
                 Description = it.Description,
-                Platform = it.Platform,
+                Platforms = it.Platforms.Select(obj => obj.Name).ToList(),
                 Genres = it.Genres.Select(obj => obj.Name).ToList()
             }).ToListAsync();
         }

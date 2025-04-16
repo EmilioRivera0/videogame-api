@@ -16,7 +16,10 @@ namespace videogame_api.src.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<VideogamePublishableDTO>>> GetVideogameInstances()
         {
-            return await _context.VideogamesSet.Include(it => it.Genres).Select(it => ToPublishableDTO(it)).ToListAsync();
+            return await _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres)
+                .Select(it => ToPublishableDTO(it)).ToListAsync();
         }
 
         [HttpGet("{id:int}")]
@@ -25,7 +28,10 @@ namespace videogame_api.src.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<VideogamePublishableDTO>> GetVideogameInstance(int id)
         {
-            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
+            var videogameInstance = await _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres)
+                .FirstOrDefaultAsync(it => it.Id == id);
 
             if (videogameInstance == null)
                 return NotFound();
@@ -52,14 +58,24 @@ namespace videogame_api.src.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> PutVideogameInstance(int id, VideogamePostPutDTO videogameDTO)
         {
-            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
+            var videogameInstance = await _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres)
+                .FirstOrDefaultAsync(it => it.Id == id);
             
             if (videogameInstance == null)
                 return NotFound();
             
             videogameInstance.Name = videogameDTO.Name;
             videogameInstance.Description = videogameDTO.Description;
-            videogameInstance.Platform = videogameDTO.Platform;
+            videogameInstance.Platforms.Clear();
+            videogameInstance.Platforms = videogameDTO.Platforms.Select(obj =>
+            {
+                var platform = _context.PlatformSet.FirstOrDefault(it => it.Name == obj);
+                if (platform == null)
+                    platform = new Platform { Name = obj };
+                return platform;
+            }).ToList();
             videogameInstance.Genres.Clear();
             videogameInstance.Genres = videogameDTO.Genres.Select(obj =>
             {
@@ -92,7 +108,10 @@ namespace videogame_api.src.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> PatchVideogameInstance([FromRoute] int id, JsonPatchDocument<VideogameInstance> patchDocument)
         {
-            var videogameInstance = await _context.VideogamesSet.Include(it => it.Genres).FirstOrDefaultAsync(it => it.Id == id);
+            var videogameInstance = await _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres)
+                .FirstOrDefaultAsync(it => it.Id == id);
 
             if (videogameInstance == null)
                 return NotFound();
@@ -137,30 +156,41 @@ namespace videogame_api.src.Controllers
                 Id = videogameInstance.Id,
                 Name = videogameInstance.Name,
                 Description = videogameInstance.Description,
-                Platform = videogameInstance.Platform,
+                Platforms = [.. videogameInstance.Platforms.Select(it => it.Name)],
                 Genres = [.. videogameInstance.Genres.Select(it => it.Name)]
             };
         }
         private async Task<VideogameInstance> ToVideogameInstance(VideogamePostPutDTO videogamePostPutDTO)
         {
-            Genre temp;
+            Platform tempPlatform;
+            Genre tempGenre;
+            List<Platform> platforms = [];
             List<Genre> genres = [];
 
+            foreach (string platform in videogamePostPutDTO.Platforms)
+            {
+                tempPlatform = await _context.PlatformSet.FirstOrDefaultAsync(it => it.Name == platform);
+
+                if (tempPlatform == null)
+                    tempPlatform = new Platform { Name = platform };
+
+                platforms.Add(tempPlatform);
+            }
             foreach (string genre in videogamePostPutDTO.Genres)
             {
-                temp = await _context.GenresSet.FirstOrDefaultAsync(it => it.Name == genre);
+                tempGenre = await _context.GenresSet.FirstOrDefaultAsync(it => it.Name == genre);
 
-                if (temp == null)
-                    temp = new Genre{Name = genre};
+                if (tempGenre == null)
+                    tempGenre = new Genre{Name = genre};
 
-                genres.Add(temp);
+                genres.Add(tempGenre);
             }
 
             return new VideogameInstance
             {
                 Name = videogamePostPutDTO.Name,
                 Description = videogamePostPutDTO.Description,
-                Platform = videogamePostPutDTO.Platform,
+                Platforms = platforms,
                 Genres = genres
             };
         }
