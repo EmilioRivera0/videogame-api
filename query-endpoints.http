@@ -1,0 +1,6 @@
+@videogame_api_HostAddress = http://localhost:5030/api/query/
+###
+
+GET {{videogame_api_HostAddress}}?name=Super%20Mario%20Bros
+
+###
