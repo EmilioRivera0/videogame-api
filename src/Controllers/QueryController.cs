@@ -31,6 +31,7 @@ namespace videogame_api.src.Controllers
 
             return await query.Select(it => new VideogamePublishableDTO
             {
+                Id = it.Id,
                 Name = it.Name,
                 Description = it.Description,
                 Platforms = it.Platforms.Select(obj => obj.Name).ToList(),
