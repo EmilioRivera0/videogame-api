@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using Microsoft.AspNetCore.Mvc;
-using videogame_api.src.Formatters;
 
+// Apply ApiController attribute to all Controllers
 [assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
@@ -16,7 +15,7 @@ builder.Services.AddControllers()
 // Enable Swagger
 builder.Services.AddSwaggerGen();
 
-// Register in memory DB
+// Register in-memory DB
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("videogame-api"));
 
 var app = builder.Build();
