@@ -87,7 +87,7 @@ namespace videogame_api.src.Controllers
             if (patchDocument == null)
                 return BadRequest();
             
-            patchDocument.ApplyTo(genre, ModelState);
+            patchDocument.ApplyTo(genre);
             
             genre.Version = DateTime.Now;
 

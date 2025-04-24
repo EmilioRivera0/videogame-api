@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace videogame_api.src.Models
 {
@@ -11,6 +12,8 @@ namespace videogame_api.src.Models
         public string Description { get; set; } = null!;
         public List<Platform> Platforms { get; set; } = null!;
         public List<Genre> Genres { get; set; } = [];
+        [JsonIgnore]
+        public Stock? Stock { get; set; }
         [ConcurrencyCheck]
         public DateTime Version { get; set; } = DateTime.Now;
     }

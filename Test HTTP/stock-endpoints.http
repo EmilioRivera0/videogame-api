@@ -1,0 +1,31 @@
+@videogame_api_HostAddress = http://localhost:5030/api/stock/
+###
+
+GET {{videogame_api_HostAddress}}
+Accept: application/json
+
+###
+
+POST {{videogame_api_HostAddress}}
+Content-Type: application/json
+
+{
+  "videogameid": 2,
+  "amount": 13,
+}
+
+###
+
+@id=2
+PATCH {{videogame_api_HostAddress}}json-patch-doc/{{id}}
+Content-Type: application/json
+
+[
+    {
+    "op": "add",
+    "path": "/amount",
+    "value": 51
+  }
+]
+
+###

@@ -1,6 +1,4 @@
-﻿using videogame_api.src.Models;
-
-namespace videogame_api.src.DTO
+﻿namespace videogame_api.src.DTO
 {
     // DTOs
     public record VideogamePostPutDTO(string Name, string Description, List<string> Platforms, List<string> Genres)

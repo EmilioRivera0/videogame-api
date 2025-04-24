@@ -119,7 +119,7 @@ namespace videogame_api.src.Controllers
             if (patchDocument == null)
                 return BadRequest();
 
-            patchDocument.ApplyTo(videogameInstance, ModelState);
+            patchDocument.ApplyTo(videogameInstance);
 
             videogameInstance.Version = DateTime.Now;
 

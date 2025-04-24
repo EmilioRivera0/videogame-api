@@ -87,7 +87,7 @@ namespace videogame_api.src.Controllers
             if (patchDocument == null)
                 return BadRequest();
             
-            patchDocument.ApplyTo(platform, ModelState);
+            patchDocument.ApplyTo(platform);
             
             platform.Version = DateTime.Now;
 
