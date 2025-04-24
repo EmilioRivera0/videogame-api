@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.DTO;
 using videogame_api.src.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace videogame_api.src.Controllers
 {
@@ -101,12 +102,12 @@ namespace videogame_api.src.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:int}")]
+        [HttpPatch("json-patch-doc/{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PatchVideogameInstance([FromRoute] int id, JsonPatchDocument<VideogameInstance> patchDocument)
+        public async Task<IActionResult> JsonPatchDocVideogameInstance([FromRoute] int id, JsonPatchDocument<VideogameInstance> patchDocument)
         {
             var videogameInstance = await _context.VideogamesSet
                 .Include(it => it.Platforms)
@@ -123,6 +124,54 @@ namespace videogame_api.src.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            videogameInstance.Version = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> PatchVideogameInstance([FromRoute] int id, VideogamePatch videogame)
+        {
+            var videogameInstance = await _context.VideogamesSet
+                .Include(it => it.Platforms)
+                .Include(it => it.Genres)
+                .FirstOrDefaultAsync(it => it.Id == id);
+
+            if (videogameInstance == null)
+                return NotFound();
+
+            if (videogame.Name != null)
+                videogameInstance.Name = videogame.Name;
+            if (videogame.Description != null)
+                videogameInstance.Description = videogame.Description;
+            if (videogame.Platforms.Count > 0)
+            {
+                videogameInstance.Platforms.Clear();
+                videogameInstance.Platforms = [.. videogame.Platforms.Select(platform =>
+                {
+                    var temp = _context.PlatformSet.FirstOrDefault(it => it.Name == platform);
+                    if (temp == null)
+                        temp = new Platform { Name = platform };
+                    return temp;
+                })];
+            }
+            if (videogame.Genres.Count > 0)
+            {
+                videogameInstance.Genres.Clear();
+                videogameInstance.Genres = [.. videogame.Genres.Select(genre =>
+                {
+                    var temp = _context.GenresSet.FirstOrDefault(it => it.Name == genre);
+                    if (temp == null)
+                        temp = new Genre { Name = genre };
+                    return temp;
+                })];
+            }
 
             videogameInstance.Version = DateTime.Now;
 

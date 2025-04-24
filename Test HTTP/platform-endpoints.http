@@ -25,14 +25,14 @@ Content-Type: application/json
 
 ###
 
-PATCH {{videogame_api_HostAddress}}{{id}}
+PATCH {{videogame_api_HostAddress}}json-patch-doc/{{id}}
 Content-Type: application/json
 
 [
     {
     "op": "add",
     "path": "/name",
-    "value": "Xbox 360"
+    "value": "PS3"
   }
 ]
 

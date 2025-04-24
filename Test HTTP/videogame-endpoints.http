@@ -12,7 +12,7 @@ Content-Type: application/json
 {
   "name": "Super Mario Bros",
   "description": "A classic platformer game",
-  "platform": [
+  "platforms": [
     "NES",
   ],
   "genres": [
@@ -30,7 +30,7 @@ Content-Type: application/json
 {
   "name": "Resident Evil 8",
   "description": "A modern survival horror classic",
-  "platform": [
+  "platforms": [
     "PS3",
   ],
   "genres": [
@@ -43,21 +43,10 @@ Content-Type: application/json
 PATCH {{videogame_api_HostAddress}}{{id}}
 Content-Type: application/json
 
-[
-  {
-    "op": "add",
-    "path": "/genres/-",
-    "value": {
-      "Name": "Action"
-    }
-  },
-  {
-    "op": "add",
-    "path": "/platforms/-",
-    "value": {
-      "Name": "Xbox 360"
-    }
-  }
-]
+{
+  "platforms": [
+    "Xbox One",
+  ]
+}
 
 ###
