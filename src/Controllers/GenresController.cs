@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using videogame_api.src.DTO;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Http;
 
 namespace videogame_api.src.Controllers
 {
@@ -90,9 +89,6 @@ namespace videogame_api.src.Controllers
             
             patchDocument.ApplyTo(genre, ModelState);
             
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             genre.Version = DateTime.Now;
 
             await _context.SaveChangesAsync();

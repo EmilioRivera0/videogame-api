@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.DTO;
 using videogame_api.src.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace videogame_api.src.Controllers
 {
@@ -70,21 +69,21 @@ namespace videogame_api.src.Controllers
             videogameInstance.Name = videogameDTO.Name;
             videogameInstance.Description = videogameDTO.Description;
             videogameInstance.Platforms.Clear();
-            videogameInstance.Platforms = videogameDTO.Platforms.Select(obj =>
+            videogameInstance.Platforms = [.. videogameDTO.Platforms.Select(obj =>
             {
                 var platform = _context.PlatformSet.FirstOrDefault(it => it.Name == obj);
                 if (platform == null)
                     platform = new Platform { Name = obj };
                 return platform;
-            }).ToList();
+            })];
             videogameInstance.Genres.Clear();
-            videogameInstance.Genres = videogameDTO.Genres.Select(obj =>
+            videogameInstance.Genres = [.. videogameDTO.Genres.Select(obj =>
             {
                 var genre = _context.GenresSet.FirstOrDefault(it => it.Name == obj);
                 if (genre == null)
                     genre = new Genre { Name = obj };
                 return genre;
-            }).ToList();
+            })];
 
             videogameInstance.Version = DateTime.Now;
 
@@ -122,9 +121,6 @@ namespace videogame_api.src.Controllers
 
             patchDocument.ApplyTo(videogameInstance, ModelState);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             videogameInstance.Version = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -156,8 +152,7 @@ namespace videogame_api.src.Controllers
                 videogameInstance.Platforms = [.. videogame.Platforms.Select(platform =>
                 {
                     var temp = _context.PlatformSet.FirstOrDefault(it => it.Name == platform);
-                    if (temp == null)
-                        temp = new Platform { Name = platform };
+                    temp ??= new Platform { Name = platform };
                     return temp;
                 })];
             }
@@ -167,8 +162,7 @@ namespace videogame_api.src.Controllers
                 videogameInstance.Genres = [.. videogame.Genres.Select(genre =>
                 {
                     var temp = _context.GenresSet.FirstOrDefault(it => it.Name == genre);
-                    if (temp == null)
-                        temp = new Genre { Name = genre };
+                    temp ??= new Genre { Name = genre };
                     return temp;
                 })];
             }
@@ -220,8 +214,7 @@ namespace videogame_api.src.Controllers
             {
                 tempPlatform = await _context.PlatformSet.FirstOrDefaultAsync(it => it.Name == platform);
 
-                if (tempPlatform == null)
-                    tempPlatform = new Platform { Name = platform };
+                tempPlatform ??= new Platform { Name = platform };
 
                 platforms.Add(tempPlatform);
             }
@@ -229,8 +222,7 @@ namespace videogame_api.src.Controllers
             {
                 tempGenre = await _context.GenresSet.FirstOrDefaultAsync(it => it.Name == genre);
 
-                if (tempGenre == null)
-                    tempGenre = new Genre{Name = genre};
+                tempGenre ??= new Genre{Name = genre};
 
                 genres.Add(tempGenre);
             }
