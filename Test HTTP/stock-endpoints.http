@@ -10,7 +10,7 @@ POST {{videogame_api_HostAddress}}
 Content-Type: application/json
 
 {
-  "videogameid": 2,
+  "videogameid": 1,
   "amount": 13,
 }
 

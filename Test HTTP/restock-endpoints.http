@@ -1,0 +1,17 @@
+@videogame_api_HostAddress = http://localhost:5030/api/restock/
+###
+
+GET {{videogame_api_HostAddress}}
+Accept: application/json
+
+###
+
+POST {{videogame_api_HostAddress}}
+Content-Type: application/json
+
+{
+  "stockid": 1,
+  "restockamount": 5,
+}
+
+###

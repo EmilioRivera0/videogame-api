@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace videogame_api.src.Models
 {
@@ -11,6 +12,8 @@ namespace videogame_api.src.Models
         public VideogameInstance Videogame { get; set; } = null!;
         [Required]
         public int Amount { get; set; } = 0;
+        [JsonIgnore]
+        public List<Restock> Restocks { get; set; } = [];
         [ConcurrencyCheck]
         public DateTime Version { get; set; } = DateTime.Now;
     }

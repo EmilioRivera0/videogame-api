@@ -13,5 +13,6 @@ namespace videogame_api.src.Models
         public DbSet<Genre> GenresSet { get; set; }
         public DbSet<Platform> PlatformSet { get; set; }
         public DbSet<Stock> StockSet { get; set; }
+        public DbSet<Restock> RestockSet { get; set; }
     }
 }
