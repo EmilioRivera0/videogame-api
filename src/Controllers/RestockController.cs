@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using videogame_api.src.DTO;
 using videogame_api.src.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace videogame_api.src.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class RestockController(AppDbContext context) : ControllerBase
     {
         // member fields

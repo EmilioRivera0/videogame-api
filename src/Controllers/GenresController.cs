@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using videogame_api.src.DTO;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace videogame_api.src.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class GenresController(AppDbContext context) : ControllerBase
     {
         // member fields
@@ -36,6 +38,7 @@ namespace videogame_api.src.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostGenre(GenrePostPutDTO genre)
         {
             var genreInstance = ToGenreInstance(genre);
@@ -49,6 +52,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutGenre(int id, GenrePostPutDTO genre)
         {
             var genreInstance = await _context.GenresSet.FindAsync(id);
@@ -77,6 +81,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchGenre([FromRoute] int id, JsonPatchDocument<Genre> patchDocument)
         {
             var genre = await _context.GenresSet.FindAsync(id);
@@ -100,6 +105,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteGenre(int id)
         {
             var genre = await _context.GenresSet.FindAsync(id);

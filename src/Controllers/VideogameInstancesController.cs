@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.DTO;
@@ -42,6 +43,7 @@ namespace videogame_api.src.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
+        [Authorize]
         public async Task<IActionResult> PostVideogameInstance(VideogamePostPutDTO videogameDTO)
         {
             var videogameInstance = await ToVideogameInstance(videogameDTO);
@@ -56,6 +58,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize]
         public async Task<IActionResult> PutVideogameInstance(int id, VideogamePostPutDTO videogameDTO)
         {
             var videogameInstance = await _context.VideogamesSet
@@ -106,6 +109,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize]
         public async Task<IActionResult> JsonPatchDocVideogameInstance([FromRoute] int id, JsonPatchDocument<VideogameInstance> patchDocument)
         {
             var videogameInstance = await _context.VideogamesSet
@@ -132,6 +136,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize]
         public async Task<IActionResult> PatchVideogameInstance([FromRoute] int id, VideogamePatch videogame)
         {
             var videogameInstance = await _context.VideogamesSet
@@ -178,6 +183,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize]
         public async Task<IActionResult> DeleteVideogameInstance(int id)
         {
             var videogameInstance = await _context.VideogamesSet.FindAsync(id);

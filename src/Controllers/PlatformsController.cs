@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using videogame_api.src.DTO;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace videogame_api.src.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class PlatformsController(AppDbContext context) : ControllerBase
     {
         // member fields
@@ -36,6 +38,7 @@ namespace videogame_api.src.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostPlatform(PlatformPostPutDTO platform)
         {
             var platformInstance = ToPlatformInstance(platform);
@@ -49,6 +52,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutPlatform(int id, PlatformPostPutDTO platform)
         {
             var platformInstance = await _context.PlatformSet.FindAsync(id);
@@ -77,6 +81,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchPlatform([FromRoute] int id, JsonPatchDocument<Platform> patchDocument)
         {
             var platform = await _context.PlatformSet.FindAsync(id);
@@ -100,6 +105,7 @@ namespace videogame_api.src.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePlatform(int id)
         {
             var platform = await _context.PlatformSet.FindAsync(id);

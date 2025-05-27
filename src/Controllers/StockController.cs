@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using videogame_api.src.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace videogame_api.src.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class StockController(AppDbContext context) : ControllerBase
     {
         // member fields

@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using videogame_api.src.Models;
 using videogame_api.src.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace videogame_api.src.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class QueryController(AppDbContext context) : ControllerBase
     {
         // member fields
